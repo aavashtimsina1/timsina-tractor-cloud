@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timsina Tractor Service</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, sans-serif; }
+    body {
+      background: #eef3f8;
+      min-height: 100vh;
+      padding: 1.5rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+    .app {
+      max-width: 1500px;
+      width: 100%;
+      background: white;
+      border-radius: 36px;
+      box-shadow: 0 24px 48px -12px rgba(0,0,0,0.2);
+      padding: 2rem 2rem 2.2rem;
+    }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .brand h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #0f2b3a;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .brand h1 i { color: #2a7a4e; }
+    .brand span {
+      color: #3e6a55;
+      font-weight: 400;
+      font-size: 1rem;
+      margin-left: 0.5rem;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #eaf2ec;
+      padding: 0.3rem 1.2rem;
+      border-radius: 60px;
+      font-size: 0.9rem;
+    }
+    .status .online { color: #2a7a4e; }
+    .status .offline { color: #b13e4b; }
+    .status .loading { color: #b17d3e; }
+    .subhead {
+      color: #3b5c6e;
+      border-left: 4px solid #2a7a4e;
+      padding-left: 1rem;
+      margin: 0.2rem 0 1.5rem 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem 2rem;
+      justify-content: space-between;
+    }
+    .subhead span { background: #eaf0f5; padding: 0.2rem 1.2rem; border-radius: 30px; font-size: 0.9rem; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 2rem;
+      margin-top: 0.8rem;
+    }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; gap: 2rem; } }
+    .card {
+      background: #f9fcff;
+      border-radius: 24px;
+      padding: 1.6rem 1.8rem;
+      box-shadow: 0 4px 12px rgba(0, 20, 30, 0.05);
+      border: 1px solid #e2ebf3;
+    }
+    .card h2 {
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #1a3345;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .card h2 i { color: #2a7a4e; }
+    .form-group { margin-bottom: 1rem; }
+    label {
+      display: block;
+      font-weight: 500;
+      color: #1d3b4e;
+      font-size: 0.9rem;
+      margin-bottom: 0.2rem;
+    }
+    label i { margin-right: 5px; color: #2a6f4c; }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.65rem 1rem;
+      border: 1px solid #d2dde8;
+      border-radius: 40px;
+      font-size: 0.95rem;
+      background: white;
+      transition: 0.2s;
+      outline: none;
+    }
+    textarea {
+      border-radius: 20px;
+      resize: vertical;
+      min-height: 55px;
+      font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #2a7a4e;
+      box-shadow: 0 0 0 3px rgba(42,122,78,0.12);
+    }
+    .btn {
+      background: #2a7a4e;
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 0.65rem 1.8rem;
+      border-radius: 60px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid transparent;
+    }
+    .btn:hover { background: #1d5f3c; transform: scale(1.02); box-shadow: 0 6px 14px rgba(42,122,78,0.2); }
+    .btn-outline { background: transparent; color: #1d3b4f; border: 1px solid #c0cedc; }
+    .btn-outline:hover { background: #eaf1f8; transform: none; box-shadow: none; }
+    .btn-danger { background: #b13e4b; }
+    .btn-danger:hover { background: #932d39; }
+    .btn-combine { background: #b17d3e; }
+    .btn-combine:hover { background: #8f642f; }
+    .flex-row {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 0.3rem;
+    }
+    .search-row {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .search-row input {
+      flex: 1;
+      min-width: 150px;
+    }
+    .search-row .btn { padding: 0.5rem 1.2rem; }
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 0.5rem;
+      border-radius: 20px;
+      border: 1px solid #dee8f0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      background: white;
+    }
+    th {
+      background: #e8f0f7;
+      color: #1a3345;
+      font-weight: 600;
+      padding: 0.8rem 0.5rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+    td { padding: 0.65rem 0.5rem; border-bottom: 1px solid #e9f0f6; vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    .badge {
+      background: #d7e7dd;
+      color: #1d4d34;
+      padding: 0.15rem 1rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .actions i {
+      margin: 0 3px;
+      cursor: pointer;
+      color: #4f6a7e;
+      transition: 0.15s;
+      font-size: 1rem;
+    }
+    .actions i:hover { color: #0f2b3a; }
+    .empty-row td { text-align: center; color: #6b7f91; padding: 2.2rem 0; font-style: italic; }
+    .summary {
+      background: #eaf2ec;
+      border-radius: 60px;
+      padding: 0.3rem 1.4rem;
+      font-size: 0.9rem;
+      display: inline-block;
+      color: #1a3d2c;
+    }
+    .footer-info {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-top: 1px solid #dee8f0;
+      padding-top: 1.5rem;
+      color: #3d6073;
+      font-size: 0.9rem;
+    }
+    .desc-preview {
+      max-width: 120px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: inline-block;
+      vertical-align: middle;
+      color: #2b4b5e;
+    }
+    .bill-total {
+      background: #e1efe7;
+      border-radius: 40px;
+      padding: 0.2rem 1.2rem;
+      font-weight: 600;
+      color: #0f3d28;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1a3345;
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 60px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 1000;
+      display: none;
+      max-width: 400px;
+    }
+    .toast.show { display: block; }
+    .toast.success { background: #2a7a4e; }
+    .toast.error { background: #b13e4b; }
+    .print-bill {
+      display: none;
+      background: white;
+      padding: 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      font-family: 'Courier New', monospace;
+    }
+    .print-bill h2 {
+      font-size: 1.8rem;
+      border-bottom: 2px solid #2a7a4e;
+      padding-bottom: 0.3rem;
+      color: #0f2b3a;
+    }
+    .print-bill .bill-details { margin: 1.2rem 0; line-height: 1.8; }
+    .print-bill .bill-details strong { display: inline-block; width: 120px; }
+    .print-bill .bill-footer {
+      margin-top: 2rem;
+      border-top: 1px dashed #888;
+      padding-top: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #3d6073;
+    }
+    .print-bill .amount-large {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #1d5f3c;
+    }
+    .print-bill .total-row {
+      margin-top: 0.8rem;
+      padding-top: 0.8rem;
+      border-top: 2px solid #2a7a4e;
+      font-size: 1.2rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+    }
+    @media print {
+      body * { visibility: hidden; }
+      .print-bill, .print-bill * { visibility: visible; }
+      .print-bill { display: block !important; position: absolute; top: 0; left: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <header>
+    <div class="brand">
+      <h1><i class="fas fa-tractor"></i> Timsina Tractor Service</h1>
+      <span><i class="fas fa-cloud"></i> cloud sync · multi-device</span>
+    </div>
+    <div class="status">
+      <i class="fas fa-circle" id="statusIcon" style="color: #b17d3e;"></i>
+      <span id="statusText">Connecting...</span>
+      <button class="btn btn-outline" style="padding:0.2rem 0.8rem; font-size:0.8rem;" onclick="loadData()"><i class="fas fa-sync-alt"></i></button>
+    </div>
+  </header>
+
+  <div class="subhead">
+    <span><i class="fas fa-database"></i> <span id="totalCount">0</span> records</span>
+    <span><i class="fas fa-coins"></i> Total billed: <span id="totalBilled">$0.00</span></span>
+    <span><i class="fas fa-hourglass-half"></i> avg time: <span id="avgTime">—</span> h</span>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h2><i class="fas fa-plus-circle"></i> Add / update record</h2>
+      <form id="customerForm">
+        <input type="hidden" id="editId" value="">
+        <div class="form-group"><label><i class="far fa-user"></i> Customer / farm</label><input type="text" id="fullName" placeholder="e.g. Green Valley Farm" required></div>
+        <div class="form-group"><label><i class="fas fa-phone-alt"></i> Phone</label><input type="text" id="phone" placeholder="+1 555 1234"></div>
+        <div class="form-group"><label><i class="fas fa-tasks"></i> Service type</label>
+          <select id="serviceType"><option value="Ploughing">Ploughing</option><option value="Seeding">Seeding</option><option value="Harvesting">Harvesting</option><option value="Cultivation">Cultivation</option><option value="Other">Other</option></select>
+        </div>
+        <div class="form-group"><label><i class="far fa-clock"></i> Time (hours)</label><input type="number" id="timeNeeded" placeholder="e.g. 3.5" step="0.1" min="0" value="2.0"></div>
+        <div class="form-group"><label><i class="fas fa-dollar-sign"></i> Billing amount ($)</label><input type="number" id="billingAmount" placeholder="0.00" step="0.01" min="0" value="120.00"></div>
+        <div class="form-group"><label><i class="fas fa-align-left"></i> Description / notes</label><textarea id="description" rows="2" placeholder="field conditions, acres, etc."></textarea></div>
+        <div class="form-group"><label><i class="far fa-calendar-alt"></i> Service date</label><input type="date" id="date"></div>
+        <div class="flex-row">
+          <button type="submit" class="btn" id="submitBtn"><i class="fas fa-save"></i> Save</button>
+          <button type="button" class="btn btn-outline" id="clearBtn"><i class="fas fa-undo-alt"></i> Clear</button>
+          <button type="button" class="btn btn-combine" id="combineBtn"><i class="fas fa-compress-alt"></i> Combine</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2><i class="fas fa-list-ul"></i> Customer records</h2>
+      <div class="search-row">
+        <input type="text" id="searchInput" placeholder="🔍 Search by name, service, phone..." />
+        <button class="btn btn-outline" id="searchBtn"><i class="fas fa-search"></i></button>
+        <button class="btn btn-outline" id="clearSearchBtn"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Customer</th><th>Service / time</th><th>Date</th><th>Description</th><th>Amount</th><th style="text-align:center">Actions</th></tr></thead>
+          <tbody id="tableBody"><tr class="empty-row"><td colspan="6"><i class="fas fa-spinner fa-spin"></i> Loading...</td></tr></tbody>
+        </table>
+      </div>
+      <div class="flex-row" style="margin-top: 1.2rem; justify-content: flex-end;">
+        <button class="btn btn-outline" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+        <button class="btn btn-danger" id="deleteAllBtn"><i class="fas fa-trash-alt"></i> Delete all</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-info">
+    <span><i class="fas fa-server"></i> Data stored in SQLite database · syncs across devices</span>
+    <span><i class="fas fa-globe"></i> Accessible from any device, anywhere</span>
+    <span><i class="fas fa-print"></i> Click print icon to print bill</span>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="printBillContainer" class="print-bill"></div>
+
+<script>
+  const API_URL = '/api';
+  let customers = [];
+
+  function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast show ${type}`;
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 3000);
+  }
+
+  function updateStatus(status, message) {
+    const icon = document.getElementById('statusIcon');
+    const text = document.getElementById('statusText');
+    icon.className = `fas fa-circle ${status}`;
+    text.textContent = message;
+  }
+
+  async function apiCall(endpoint, options = {}) {
+    try {
+      const response = await fetch(`${API_URL}${endpoint}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(options.headers || {})
+        }
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'API request failed');
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('API Error:', error);
+      updateStatus('offline', 'Offline');
+      showToast('Error: ' + error.message, 'error');
+      throw error;
+    }
+  }
+
+  async function loadData() {
+    try {
+      updateStatus('loading', 'Loading...');
+      
+      const response = await apiCall('/customers');
+      customers = response.data || response;
+      renderTable();
+      await loadStats();
+      
+      updateStatus('online', 'Connected');
+    } catch (error) {
+      updateStatus('offline', 'Offline');
+      showToast('Failed to load data. Check server connection.', 'error');
+    }
+  }
+
+  async function loadStats() {
+    try {
+      const stats = await apiCall('/stats');
+      document.getElementById('totalBilled').textContent = '$' + (stats.totalBilled || 0).toFixed(2);
+      document.getElementById('avgTime').textContent = stats.avgTime ? stats.avgTime.toFixed(1) + ' h' : '—';
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+    }
+  }
+
+  function renderTable() {
+    const tableBody = document.getElementById('tableBody');
+    const totalCount = document.getElementById('totalCount');
+    
+    if (!customers || customers.length === 0) {
+      tableBody.innerHTML = `<tr class="empty-row"><td colspan="6"><i class="fas fa-info-circle"></i> No records — add one above</td></tr>`;
+      totalCount.textContent = '0';
+      return;
+    }
+
+    totalCount.textContent = customers.length;
+
+    const rows = customers.map(c => {
+      const timeDisplay = c.timeNeeded ? parseFloat(c.timeNeeded).toFixed(1) + ' h' : '—';
+      const descShort = c.description ? c.description.substring(0, 50) : '';
+      return `<tr>
+        <td><strong>${escapeHtml(c.fullName)}</strong><br><span style="font-size:0.7rem; color:#4d6a7e;">${escapeHtml(c.phone || '')}</span></td>
+        <td><span class="badge">${escapeHtml(c.serviceType)}</span><small><i class="far fa-clock"></i> ${timeDisplay}</small></td>
+        <td>${escapeHtml(c.date)}</td>
+        <td><span class="desc-preview" title="${escapeHtml(c.description || '')}">${escapeHtml(descShort) || '—'}</span></td>
+        <td><span class="bill-total">$${(c.billingAmount || 0).toFixed(2)}</span></td>
+        <td class="actions" style="text-align:center; white-space:nowrap;">
+          <i class="fas fa-print" data-id="${c.id}" title="Print Bill" style="color:#1f6390; margin-right:8px; cursor:pointer;"></i>
+          <i class="fas fa-edit" data-id="${c.id}" title="Edit" style="margin-right:8px; cursor:pointer;"></i>
+          <i class="fas fa-trash-alt" data-id="${c.id}" title="Delete" style="color:#b13e4b; cursor:pointer;"></i>
+        </td>
+      </tr>`;
+    }).join('');
+
+    tableBody.innerHTML = rows;
+
+    tableBody.querySelectorAll('.actions i.fa-print').forEach(el => el.addEventListener('click', onPrintIcon));
+    tableBody.querySelectorAll('.actions i.fa-edit').forEach(el => el.addEventListener('click', onEditIcon));
+    tableBody.querySelectorAll('.actions i.fa-trash-alt').forEach(el => el.addEventListener('click', onDeleteIcon));
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  async function saveRecord(data) {
+    const editId = document.getElementById('editId').value;
+    let result;
+    
+    try {
+      if (editId) {
+        result = await apiCall(`/customers/${editId}`, {
+          method: 'PUT',
+          body: JSON.stringify(data)
+        });
+        showToast('Record updated successfully!');
+      } else {
+        result = await apiCall('/customers', {
+          method: 'POST',
+          body: JSON.stringify(data)
+        });
+        showToast('Record saved successfully!');
+      }
+      
+      await loadData();
+      clearForm();
+      return result;
+    } catch (error) {
+      showToast('Failed to save record', 'error');
+    }
+  }
+
+  async function deleteRecord(id) {
+    if (!confirm('Delete this record?')) return;
+    try {
+      await apiCall(`/customers/${id}`, { method: 'DELETE' });
+      showToast('Record deleted');
+      await loadData();
+    } catch (error) {
+      showToast('Failed to delete record', 'error');
+    }
+  }
+
+  async function deleteAllRecords() {
+    if (!confirm('Delete ALL records? This cannot be undone!')) return;
+    try {
+      await apiCall('/customers', { method: 'DELETE' });
+      showToast('All records deleted');
+      await loadData();
+    } catch (error) {
+      showToast('Failed to delete records', 'error');
+    }
+  }
+
+  async function combineDuplicates() {
+    try {
+      const result = await apiCall('/combine', { method: 'POST' });
+      if (result.combined > 0) {
+        showToast(`Successfully combined ${result.combined} duplicate records`);
+      } else {
+        showToast('No duplicates found to combine');
+      }
+      await loadData();
+    } catch (error) {
+      showToast('Combine operation failed', 'error');
+    }
+  }
+
+  function clearForm() {
+    document.getElementById('customerForm').reset();
+    document.getElementById('editId').value = '';
+    document.getElementById('submitBtn').innerHTML = '<i class="fas fa-save"></i> Save';
+    document.getElementById('date').value = new Date().toISOString().split('T')[0];
+  }
+
+  function fillFormForEdit(customer) {
+    document.getElementById('fullName').value = customer.fullName || '';
+    document.getElementById('phone').value = customer.phone || '';
+    document.getElementById('serviceType').value = customer.serviceType || 'Ploughing';
+    document.getElementById('timeNeeded').value = customer.timeNeeded || '';
+    document.getElementById('billingAmount').value = customer.billingAmount || '';
+    document.getElementById('description').value = customer.description || '';
+    document.getElementById('date').value = customer.date || new Date().toISOString().split('T')[0];
+    document.getElementById('editId').value = customer.id;
+    document.getElementById('submitBtn').innerHTML = '<i class="fas fa-pen"></i> Update';
+  }
+
+  function onEditIcon(e) {
+    const id = parseInt(e.target.dataset.id);
+    const customer = customers.find(c => c.id === id);
+    if (customer) {
+      fillFormForEdit(customer);
+      document.querySelector('.grid-2').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  function onDeleteIcon(e) {
+    const id = parseInt(e.target.dataset.id);
+    deleteRecord(id);
+  }
+
+  function onPrintIcon(e) {
+    const id = parseInt(e.target.dataset.id);
+    const customer = customers.find(c => c.id === id);
+    if (!customer) return;
+    generateAndPrintBill(customer);
+  }
+
+  function generateAndPrintBill(customer) {
+    const container = document.getElementById('printBillContainer');
+    const dateStr = customer.date || new Date().toISOString().split('T')[0];
+
+    container.innerHTML = `
+      <div style="text-align:center; margin-bottom:1rem;">
+        <h2><i class="fas fa-tractor" style="color:#2a7a4e;"></i> Timsina Tractor Service</h2>
+        <p style="color:#3d6073;">Service Invoice</p>
+      </div>
+      <div class="bill-details">
+        <p><strong>Invoice #:</strong> TTS-${String(customer.id).padStart(4, '0')}</p>
+        <p><strong>Date:</strong> ${dateStr}</p>
+        <p><strong>Customer:</strong> ${escapeHtml(customer.fullName)}</p>
+        <p><strong>Phone:</strong> ${escapeHtml(customer.phone || '—')}</p>
+        <p><strong>Service:</strong> ${escapeHtml(customer.serviceType)}</p>
+        <p><strong>Time:</strong> ${customer.timeNeeded ? customer.timeNeeded + ' h' : '—'}</p>
+        <p><strong>Description:</strong> ${escapeHtml(customer.description || '—')}</p>
+        <div class="total-row">
+          <span>TOTAL AMOUNT</span>
+          <span>$${(customer.billingAmount || 0).toFixed(2)}</span>
+        </div>
+      </div>
+      <div class="bill-footer">
+        <p><i class="fas fa-check-circle" style="color:#2a7a4e;"></i> Thank you for your business!</p>
+        <p style="font-size:0.8rem;">This is a computer-generated invoice.</p>
+      </div>
+    `;
+
+    container.style.display = 'block';
+    setTimeout(() => {
+      window.print();
+      setTimeout(() => { container.style.display = 'none'; }, 500);
+    }, 300);
+  }
+
+  // Event Listeners
+  document.getElementById('customerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const fullName = document.getElementById('fullName').value.trim();
+    if (!fullName) {
+      showToast('Please enter customer name', 'error');
+      return;
+    }
+
+    const data = {
+      fullName,
+      phone: document.getElementById('phone').value.trim(),
+      serviceType: document.getElementById('serviceType').value,
+      timeNeeded: parseFloat(document.getElementById('timeNeeded').value) || null,
+      billingAmount: parseFloat(document.getElementById('billingAmount').value) || null,
+      description: document.getElementById('description').value.trim(),
+      date: document.getElementById('date').value || new Date().toISOString().split('T')[0]
+    };
+
+    await saveRecord(data);
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', clearForm);
+  document.getElementById('refreshBtn').addEventListener('click', loadData);
+  document.getElementById('deleteAllBtn').addEventListener('click', deleteAllRecords);
+  document.getElementById('combineBtn').addEventListener('click', combineDuplicates);
+  document.getElementById('searchBtn').addEventListener('click', async function() {
+    const query = document.getElementById('searchInput').value.trim();
+    if (!query) {
+      await loadData();
+      return;
+    }
+    try {
+      const data = await apiCall(`/search?q=${encodeURIComponent(query)}`);
+      customers = data;
+      renderTable();
+    } catch (error) {
+      showToast('Search failed', 'error');
+    }
+  });
+  document.getElementById('clearSearchBtn').addEventListener('click', function() {
+    document.getElementById('searchInput').value = '';
+    loadData();
+  });
+  document.getElementById('searchInput').addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') {
+      document.getElementById('searchBtn').click();
+    }
+  });
+
+  // Initialize
+  document.getElementById('date').value = new Date().toISOString().split('T')[0];
+  loadData();
+</script>
+</body>
+</html>
